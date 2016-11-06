@@ -1,2 +1,2 @@
 # CIS1057
-Various labs and work for CIS1057 at Temple University
+Various labs and assignments for CIS 1057, Programming in C, at Temple University.
