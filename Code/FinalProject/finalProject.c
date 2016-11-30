@@ -56,7 +56,8 @@ void printOrder(order_array_t order_list, int index);
 void printOrders(order_array_t order_list);
 void sortProducts(product_array_t *product_list);
 void swap(product_array_t *product_list, int index1, int index2);
-int id_lessThan(char id_1[], char id_2[]);
+int searchProducts(product_array_t product_list, char _id[]);
+double processOrders(order_array_t order_list, product_array_t *product_list);
 
 int main(){
 	product_array_t product_list;
@@ -73,6 +74,13 @@ int main(){
 	sortProducts(&product_list);
 	printf("\nSorted Orders\n");
 	printProducts(product_list);
+	char sample_id[] = "B123";
+	int i = searchProducts(product_list, sample_id);
+	if(i != -1){
+		printf("Search for product %s found at index %d\n", sample_id, i);
+	}else{
+		printf("Search for product %s was not found.\n", sample_id);
+	}
 	return 0;
 }
 
@@ -166,15 +174,13 @@ void sortProducts(product_array_t *product_list){
 	for(i = product_list->count - 1; i > 0; i--){
 		int j;
 		for(j = i - 1; j >= 0; j--){
-			if(id_lessThan(product_list->inventory[i].id,product_list->inventory[j].id)){
+			if(strcmp(product_list->inventory[i].id,product_list->inventory[j].id) < 0){
 				product_t temp = product_list->inventory[j];
 				product_list->inventory[j] = product_list->inventory[i];
 				product_list->inventory[i] = temp; 
 			}
 		}
 	}
-	//swap(product_list, 1, 0);
-	//printProducts(product_list);
 }
 
 void swap(product_array_t *product_list, int index1, int index2){
@@ -183,24 +189,29 @@ void swap(product_array_t *product_list, int index1, int index2){
 	product_list->inventory[index2] = temp;
 }
 
-int id_lessThan(char id_1[], char id_2[]){
-	if(id_1[0] < id_2[0]){
-		return 1;
-	}else{
-		char id_num_1[strlen(id_1)-1];
-		int i;
-		for(i = 1; i < strlen(id_1);i++){
-			id_num_1[i - 1] = id_1[i];
-		}
-		char id_num_2[strlen(id_2)-1];
-		int j;
-		for(j = 1; j < strlen(id_2);j++){
-			id_num_2[j - 1] = id_2[j];
-		}
-		int id_num_1_i = atoi(id_num_1);
-		int id_num_2_i = atoi(id_num_2);
+int searchProducts(product_array_t product_list, char _id[]){
+	int left = 0, right = product_list.count - 1;
+	int middle = right / 2;
 
-		return (id_num_1_i < id_num_2_i);
+	while(right >= left){
+		if(strcmp(product_list.inventory[middle].id, _id) < 0)
+			return middle;
+		if(strcmp(product_list.inventory[middle].id, _id) > 0)
+			left = middle + 1;
+		if(strcmp(product_list.inventory[middle].id, _id) == 0)
+			right = middle - 1;
+		middle = (left + right) / 2;
 	}
+
+	return -1;
 }
 
+double processOrder(order_array_t order_list, product_array_t *product_list){
+	double order_total = 0, grand_total = 0;
+
+	int i = 0;
+	while(i < order_list.count){
+	//	int j = searchProducts(product_list, order_list.array[i].product_id);
+	}
+	return grand_total;
+}
