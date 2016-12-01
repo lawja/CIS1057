@@ -56,8 +56,9 @@ void printOrder(order_array_t order_list, int index);
 void printOrders(order_array_t order_list);
 void sortProducts(product_array_t *product_list);
 void swap(product_array_t *product_list, int index1, int index2);
-int searchProducts(product_array_t product_list, char _id[]);
+int searchProducts(product_array_t *product_list, char _id[]);
 double processOrders(order_array_t order_list, product_array_t *product_list);
+void write_products(product_array_t product_list);
 
 int main(){
 	product_array_t product_list;
@@ -75,12 +76,19 @@ int main(){
 	printf("\nSorted Orders\n");
 	printProducts(product_list);
 	char sample_id[] = "B123";
-	int i = searchProducts(product_list, sample_id);
+	int i = searchProducts(&product_list, sample_id);
 	if(i != -1){
 		printf("Search for product %s found at index %d\n", sample_id, i);
 	}else{
 		printf("Search for product %s was not found.\n", sample_id);
 	}
+	printf("\nProcessing Orders...\n");
+	double grand_total = processOrders(order_list, &product_list);
+	printf("Grand Total: %.2lf\n", grand_total);
+	printf("\nUpdated Products\n");
+	printProducts(product_list);
+	printf("\nWriting File...\n");
+	write_products(product_list);
 	return 0;
 }
 
@@ -189,16 +197,16 @@ void swap(product_array_t *product_list, int index1, int index2){
 	product_list->inventory[index2] = temp;
 }
 
-int searchProducts(product_array_t product_list, char _id[]){
-	int left = 0, right = product_list.count - 1;
+int searchProducts(product_array_t *product_list, char _id[]){
+	int left = 0, right = product_list->count - 1;
 	int middle = right / 2;
 
 	while(right >= left){
-		if(strcmp(product_list.inventory[middle].id, _id) < 0)
+		if(strcmp(product_list->inventory[middle].id, _id) == 0)
 			return middle;
-		if(strcmp(product_list.inventory[middle].id, _id) > 0)
+		if(strcmp(product_list->inventory[middle].id, _id) < 0)
 			left = middle + 1;
-		if(strcmp(product_list.inventory[middle].id, _id) == 0)
+		if(strcmp(product_list->inventory[middle].id, _id) > 0)
 			right = middle - 1;
 		middle = (left + right) / 2;
 	}
@@ -206,12 +214,39 @@ int searchProducts(product_array_t product_list, char _id[]){
 	return -1;
 }
 
-double processOrder(order_array_t order_list, product_array_t *product_list){
+double processOrders(order_array_t order_list, product_array_t *product_list){
 	double order_total = 0, grand_total = 0;
 
 	int i = 0;
 	while(i < order_list.count){
-	//	int j = searchProducts(product_list, order_list.array[i].product_id);
+		int j = searchProducts(product_list, order_list.array[i].product_id);
+		grand_total += product_list->inventory[j].price;
+		order_total += product_list->inventory[j].price;
+		
+		product_list->inventory[j].quantity -= order_list.array[i].quantity;
+
+		if(i == order_list.count - 1 || order_list.array[i].order_id != order_list.array[i + 1].order_id){
+			printf("Order %d is $%.2lf\n", order_list.array[i].order_id, order_total);
+			order_total = 0;
+		}
+		i++;
 	}
 	return grand_total;
 }
+
+void write_products(product_array_t product_list){
+	FILE *out_file = fopen("files/updated_products.csv", "w");
+	int i = 0;
+	while(i < product_list.count){
+		product_t element = product_list.inventory[i];
+		fprintf(out_file, "%s,%s,%s,%.2lf,%d\n", 
+				element.type,
+				element.id, 
+				element.desc, 
+				element.price,
+				element.quantity);
+		i++;
+	}
+	fclose(out_file);
+}
+
