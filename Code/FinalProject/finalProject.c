@@ -88,15 +88,15 @@ int main(){
 	char sample_id[] = "B123";
 	int i = search_products(&product_list, sample_id);
 	if(i != -1){
-		printf("Search for product %s found at index %d\n", sample_id, i);
+		printf("\nSearch for product %s found at index %d\n", sample_id, i);
 	}else{
-		printf("Search for product %s was not found.\n", sample_id);
+		printf("\nSearch for product %s was not found.\n", sample_id);
 	}
 
 	// processing of orders
 	printf("\nProcessing Orders...\n");
 	double grand_total = process_orders(order_list, &product_list);
-	printf("Grand Total: %.2lf\n", grand_total);
+	printf("Grand Total: $%.2lf\n", grand_total);
 
 	// shows the results of the processing
 	printf("\nUpdated Products\n");
