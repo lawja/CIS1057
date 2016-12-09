@@ -89,6 +89,7 @@ int main(){
 	int i = search_products(&product_list, sample_id);
 	if(i != -1){
 		printf("\nSearch for product %s found at index %d\n", sample_id, i);
+		print_product(product_list, i);
 	}else{
 		printf("\nSearch for product %s was not found.\n", sample_id);
 	}
